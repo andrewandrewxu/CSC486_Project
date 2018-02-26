@@ -4,6 +4,6 @@
 
 ## Setup
 - Install [Anaconda](https://conda.io/docs/user-guide/install/download.html)
-- Create a conda environment: `conda env create -f requirements.txt` -n <ENVIRONMENT NAME>`
+- Create a conda environment: `conda env create -f requirements.txt -n <ENVIRONMENT NAME>`
 - Activate the environment: `source activate <ENVIRONMENT NAME>`
 
