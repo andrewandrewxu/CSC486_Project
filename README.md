@@ -6,4 +6,6 @@
 - Install [Anaconda](https://conda.io/docs/user-guide/install/download.html)
 - Create a conda environment: `conda env create -f requirements.txt -n <ENVIRONMENT NAME>`
 - Activate the environment: `source activate <ENVIRONMENT NAME>`
+- Add the uvic repo: `git remote add git@gitlab.csc.uvic.ca:courses/201801/csc486b/final-project/group-c/term-project.git`
+- Set the uvic repo as an origin branch (to mirror the codebase): `git remote set-url --add --push origin git@gitlab.csc.uvic.ca:courses/201801/csc486b/final-project/group-c/term-project.git`
 
