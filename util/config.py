@@ -1,33 +1,3 @@
-# config.py ---
-#
-# Filename: config.py
-# Description:
-# Author: Kwang Moo Yi
-# Maintainer:
-# Created: Mon Jan 15 12:08:58 2018 (-0800)
-# Version:
-# Package-Requires: ()
-# URL:
-# Doc URL:
-# Keywords:
-# Compatibility:
-#
-#
-
-# Commentary:
-#
-#
-#
-#
-
-# Change Log:
-#
-#
-#
-# Copyright (C), Visual Computing Group @ University of Victoria.
-
-# Code:
-
 import argparse
 
 

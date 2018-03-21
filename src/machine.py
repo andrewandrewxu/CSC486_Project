@@ -1,16 +1,11 @@
 import os
 
-import numpy as np
 import tensorflow as tf
-from tqdm import trange
 
-from config import get_config, print_usage
-from utils.cifar10 import load_data
-
-data_dir = "/Users/kwang/Downloads/cifar-10-batches-py"
+from util.config import get_config, print_usage
 
 
-class MyNetwork(object):
+class Machine(object):
     """Network class """
 
     def __init__(self, x_shp, config):
@@ -22,7 +17,9 @@ class MyNetwork(object):
 
         # Build the network
         self._build_placeholder()
-        self._build_model()
+        self._build_2d_pose_module()
+        self._build_feature_adaption_module()
+        self._build_3d_pose_recurrent_module()
         self._build_loss()
         self._build_optim()
         self._build_eval()
@@ -31,9 +28,6 @@ class MyNetwork(object):
 
     def _build_placeholder(self):
         """Build placeholders."""
-
-        # TODO
-        # Create Placeholders for inputs
         self.x_in = tf.placeholder()
         self.y_in = tf.placeholder()
         self.in_2d_pose = tf.placeholder() # 2d pose module 46x46x128 output from prev stage
@@ -42,16 +36,15 @@ class MyNetwork(object):
 
     def _build_2d_pose_module(self):
         with tf.variable_scope("2dPoseModule", reuse=tf.AUTO_REUSE):
-            # TODO can load pretrained module
             # insert concat op between conv4_5 and out_2d_pose_in
             # if t == 0 skip concat?
             # then do conv4 and conv4 7
-            self.out_2d_pose_out = # TODO output from this module
+            self.out_2d_pose_out = None # TODO output from this module
 
     def _build_feature_adaption_module(self):
         with tf.variable_scope("FeatureAdaptionModule", reuse=tf.AUTO_REUSE):
             input = self.out_2d_pose_out
-            self.feature_adaption_output = #TODO 1024x1
+            self.feature_adaption_output = None #TODO 1024x1
 
 
     def _build_3d_pose_recurrent_module(self):
@@ -59,13 +52,13 @@ class MyNetwork(object):
             self.input = self.feature_adaption_output
             # TODO concat with in_3d_pose_fc
             # if t=0 skip concat?
-            self.out_3d_pose = #TODO
+            self.out_3d_pose = None #TODO
 
     def _build_loss(self):
         """Build our cross entropy loss."""
 
         with tf.variable_scope("Loss", reuse=tf.AUTO_REUSE):
-            self.loss = # TODO which is defined as the Euclidean distances between the prediction for all P joints and ground truth
+            self.loss = None # TODO which is defined as the Euclidean distances between the prediction for all P joints and ground truth
 
             # Record summary for loss
             tf.summary.scalar("loss", self.loss)
@@ -88,9 +81,6 @@ class MyNetwork(object):
         """Build the evaluation related ops"""
 
         with tf.variable_scope("Eval", tf.AUTO_REUSE):
-
-            # TODO can we compute an accuracy?
-
             # Record summary for accuracy
             tf.summary.scalar("accuracy", self.acc)
 
@@ -184,32 +174,3 @@ class MyNetwork(object):
                 )
 
             # TODO test
-
-
-
-def main(config):
-    """The main function."""
-
-    # TODO load data
-
-    mynet = MyNetwork()
-
-    mynet.train(x_tr, y_tr, x_va, y_va)
-
-    mynet.test(x_te, y_te)
-
-
-if __name__ == "__main__":
-
-    #TODO setup config file
-    # ----------------------------------------
-    # Parse configuration
-    config, unparsed = get_config()
-    # If we have unparsed arguments, print usage and exit
-    if len(unparsed) > 0:
-        print_usage()
-        exit(1)
-
-    main(config)
-
-
