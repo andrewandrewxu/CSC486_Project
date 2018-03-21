@@ -64,9 +64,9 @@ train_arg.add_argument("--data_dir", type=str,
 #                        default=1e-4,
 #                        help="Learning rate (gradient step size)")
 
-# train_arg.add_argument("--batch_size", type=int,
-#                        default=100,
-#                        help="Size of each training batch")
+train_arg.add_argument("--batch_size", type=int,
+                       default=100,
+                       help="Size of each training batch")
 
 # train_arg.add_argument("--num_epoch", type=int,
 #                        default=100,
