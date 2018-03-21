@@ -111,6 +111,7 @@ mkl-service               1.1.2            py36h57e144c_4
 mpmath                    1.0.0            py36hacc8adf_2  
 msgpack-python            0.5.1            py36he980bc4_0  
 multipledispatch          0.4.9            py36he44c36e_0  
+multitables               1.1.1                     <pip>
 navigator-updater         0.1.0            py36h8a7b86b_0  
 nbconvert                 5.3.1            py36h8dc0fde_0  
 nbformat                  4.4.0            py36h3a5bc1b_0  
@@ -138,7 +139,7 @@ patsy                     0.5.0                    py36_0
 pep8                      1.7.1                    py36_0  
 pickleshare               0.7.4            py36h9de030f_0  
 pillow                    5.0.0            py36h0738816_0  
-pip                       9.0.1            py36h226ae91_4  
+pip                       9.0.1                    py36_5  
 pkginfo                   1.4.1            py36hb0f9cfa_1  
 pluggy                    0.6.0            py36hc7daf1e_0  
 ply                       3.10             py36h1211beb_0  
@@ -201,6 +202,7 @@ tblib                     1.3.2            py36h30f5020_0
 tensorflow                1.2.1                    py36_0  
 terminado                 0.8.1                    py36_1  
 testpath                  0.3.1            py36h2698cfe_0  
+tftables                  1.1.2                     <pip>
 tk                        8.6.7                hcb92d03_3  
 toolz                     0.9.0                    py36_0  
 tornado                   4.5.3                    py36_0  
