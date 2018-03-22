@@ -91,8 +91,8 @@ class RPSMNetwork(object):
 
         with tf.variable_scope("Loss", reuse=tf.AUTO_REUSE):
             # Euclidean distances between the prediction for all P joints and ground truth:
-            joints_pred = tf.reshape(self.pred, shape=(self.num_frames, 17, 3))
-            joints_truth = tf.reshape(self.pred, shape=(self.num_frames, 17, 3))
+            joints_pred = tf.reshape(self.pred, shape=(17, 3))
+            joints_truth = tf.reshape(self.pred, shape=(17, 3))
             dist = tf.subtract(joints_pred, joints_truth)
             dist = tf.square(dist)
             sum = tf.reduce_sum(dist, axis=1)
