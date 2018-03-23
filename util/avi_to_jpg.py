@@ -8,6 +8,9 @@ arg.add_argument('--src', type=str, default='/home/tyson/data/avi', help="Source
 arg.add_argument('--out', type=str, default='/home/tyson/data/avi-out', help="Output jpg directory")
 arg.add_argument('--transform', type=str, choices=('resize', 'crop'), default='crop',
                  help='Resize or crop the image to size')
+arg.add_argument('--numframes', type=int, choices=(1,2,3,4,6,7,8,9), default=5, 
+    help='number of frames saved from video')
+
 
 
 def get_video_list(path):
@@ -32,19 +35,20 @@ def save_frames(video, video_fname, config):
     frame = 0
     success, img = video.read()
     while success:
-        img = transform(img)
-        out_name = f'{out}/{video_fname[:-4]}_frame{frame}.jpg'
-        cv2.imwrite(out_name, img)
-        frame += 1
+        if(frame % config.numframes==0):
+            img = transform(img)
+            out_name = f'{out}/{video_fname[:-4]}_frame{frame}.jpg'
+            cv2.imwrite(out_name, img)
 
+        frame += 1
         success, img = video.read()
 
 
-def resize_image(image, width=376, height=376):
+def resize_image(image, width=368, height=368):
     return cv2.resize(image, (width, height), interpolation=cv2.INTER_CUBIC)
 
 
-def crop_image(image, width=376, height=376):
+def crop_image(image, width=368, height=368):
     base_h, base_w = image.shape[:2]
     y1 = int((base_h - height)/2)
     y2 = int(height + y1)
