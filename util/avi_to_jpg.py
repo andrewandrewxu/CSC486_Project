@@ -8,7 +8,7 @@ arg.add_argument('--src', type=str, default='/home/tyson/data/avi', help="Source
 arg.add_argument('--out', type=str, default='/home/tyson/data/avi-out', help="Output jpg directory")
 arg.add_argument('--transform', type=str, choices=('resize', 'crop'), default='crop',
                  help='Resize or crop the image to size')
-arg.add_argument('--numframes', type=int, choices=(1,2,3,4,6,7,8,9), default=5, 
+arg.add_argument('--numframes', type=int, choices=(1,2,3,4,5,6,7,8,9), default=5, 
     help='number of frames saved from video')
 
 
