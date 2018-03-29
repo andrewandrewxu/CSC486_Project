@@ -15,9 +15,8 @@ class RPSMNetwork(object):
         self.num_frames = 16
         self.num_output = 51
 
-        self._load_cpm_pretrained()
         self._build_placeholder()
-        self._build_lstm()
+        self._init_recurrent()
         self._build_2d_pose_module()
         self._build_feature_adaption_module()
         self._build_3d_pose_recurrent_module()
@@ -26,49 +25,35 @@ class RPSMNetwork(object):
         self._build_summary()
         self._build_writer()
 
-    def _load_cpm_pretrained(self):
-        self.cpm = CpmModel()
-
-    def _build_lstm(self):
-        with tf.variable_scope("LSTM", reuse=tf.AUTO_REUSE):
+    def _init_recurrent(self):
+        with tf.variable_scope("Recurrent", reuse=tf.AUTO_REUSE):
             self.lstm = tf.contrib.rnn.BasicLSTMCell(1024)
-            hidden_state = tf.get_variable('hidden_state', dtype=tf.float32, shape=(self.num_frames, 1024),
+            hidden_state = tf.get_variable('hidden_state', dtype=tf.float32, shape=(1,1024),
                                            initializer=tf.initializers.zeros)
-            current_state = tf.get_variable('current_state', dtype=tf.float32, shape=1024,
+            current_state = tf.get_variable('current_state', dtype=tf.float32, shape=(1,1024),
                                             initializer=tf.initializers.zeros)
-            self.state = tf.tuple([hidden_state, current_state])
+            self.state = tf.contrib.rnn.LSTMStateTuple(hidden_state,  current_state)
+
+            # 2d pose module 46x46x128 output from prev stage
+            self.in_2d_pose = tf.get_variable('in_2d_pose', dtype=tf.float32, shape=(1, 46, 46, 128),
+                                              initializer=tf.initializers.zeros, trainable=False)
+            # output from 3D Pose Recurrent Module from prev stage
+
+            self.in_3d_pose_fc = tf.get_variable('in_3d_pose_fc', dtype=tf.float32, shape=(1, self.num_output),
+                                                 initializer=tf.initializers.zeros, trainable=False)
 
     def _build_placeholder(self):
         """Build placeholders."""
-
-        self.cpm_in = self.cpm.get_input_placeholder()
-        self.x_in = tf.placeholder(tf.float32, shape=(1, self.image_size, self.image_size, 3))
-        self.y_in = tf.placeholder(dtype=tf.float32, shape=(1, self.num_output))
-        self.t = tf.placeholder(dtype=tf.int32, shape=())
-
-        self.cpm_out = tf.get_variable('cpm_out', dtype=tf.float32, shape=(self.num_frames, 47, 47, 128),
-                                          initializer=tf.initializers.zeros)
-
-        # 2d pose module 46x46x128 output from prev stage
-        self.in_2d_pose = tf.get_variable('in_2d_pose', dtype=tf.float32, shape=(1, 47, 47, 128),
-                                          initializer=tf.initializers.zeros)
-        # output from 3D Pose Recurrent Module from prev stage
-
-        self.in_3d_pose_fc = tf.get_variable('in_3d_pose_fc', dtype=tf.float32, shape=(1, self.num_output),
-                                             initializer=tf.initializers.zeros)
-
-    def _get_cpm_out(self):
-        conv4_5 = self.cpm.get_output_conv4_5()
-        self.cpm_eval = tf.assign(self.cpm_out, conv4_5)
-        # TODO visualize output
+        #self.x_in = tf.placeholder(tf.float32, shape=(self.image_size, self.image_size, 3))
+        self.features_in = tf.placeholder(tf.float32, shape=(1, 46, 46, 128))
+        self.y_in = tf.placeholder(dtype=tf.float32, shape=self.num_output)
 
     def _build_2d_pose_module(self):
         with tf.variable_scope("2dPoseModule", reuse=tf.AUTO_REUSE):
-            conv4_5 = [self.cpm_out[self.t]]
-            concat = tf.concat([conv4_5, self.in_2d_pose], axis=3)
+            concat = tf.concat([self.features_in, self.in_2d_pose], axis=3)
             conv4_6 = tf.layers.conv2d(concat, 256, 3, 1, activation=tf.nn.relu, padding='SAME')
             self.out_2d_pose = tf.layers.conv2d(conv4_6, 128, 3, 1, activation=tf.nn.relu, padding='SAME')
-            tf.assign(self.in_2d_pose, self.out_2d_pose)
+            self.output_2d_assign = tf.assign(self.in_2d_pose, self.out_2d_pose)
 
     def _build_feature_adaption_module(self):
         with tf.variable_scope("FeatureAdaptionModule", reuse=tf.AUTO_REUSE):
@@ -80,11 +65,12 @@ class RPSMNetwork(object):
 
     def _build_3d_pose_recurrent_module(self):
         with tf.variable_scope("3dPoseRecurrentModule", reuse=tf.AUTO_REUSE):
-            # TODO figure out how states work and the dimensions
-            concat = tf.concat([self.state, self.feature_adaption_output], axis=1)
-            output, self.state = self.lstm(concat, self.state)
+            # TODO figure out how hidden states work and the dimensions
+            concat = tf.concat([self.in_3d_pose_fc, self.feature_adaption_output], axis=-1)
+            output, state = self.lstm(concat, self.state)
+            self.state_assign = tf.group(tf.assign(self.state.c,  state.c), tf.assign(self.state.h, state.h))
             self.pred = tf.layers.dense(output, 51)
-            tf.assign(self.in_3d_pose_fc, [self.pred])
+            self.out_pred_assign = tf.assign(self.in_3d_pose_fc, self.pred)
 
     def _build_loss(self):
         """Build our cross entropy loss."""
@@ -92,7 +78,7 @@ class RPSMNetwork(object):
         with tf.variable_scope("Loss", reuse=tf.AUTO_REUSE):
             # Euclidean distances between the prediction for all P joints and ground truth:
             joints_pred = tf.reshape(self.pred, shape=(17, 3))
-            joints_truth = tf.reshape(self.pred, shape=(17, 3))
+            joints_truth = tf.reshape(self.y_in, shape=(17, 3))
             dist = tf.subtract(joints_pred, joints_truth)
             dist = tf.square(dist)
             sum = tf.reduce_sum(dist, axis=1)
@@ -164,9 +150,9 @@ class RPSMNetwork(object):
         with tf.Session() as sess:
             # Init
             print("Initializing...")
-            self.cpm.restore(sess)
             sess.run(tf.global_variables_initializer())
-
+            # TODO get 46x46x128 features
+            features = np.zeros((1,46,46,128))
             # b_resume = tf.train.latest_checkpoint(self.save_file_cur)
             # if b_resume:
             #     print("Restoring from {}...".format(
@@ -180,25 +166,26 @@ class RPSMNetwork(object):
             #     best_acc = 0
 
             print("Training...")
-            # x_b and y_b are frames for one image sequence
-            for i, x_b, y_b in enumerate(zip(x_tr, y_tr)):
-                sess.run(self.cpm_eval, feed_dict={self.cpm_in: x_b})
-                self._build_lstm()
-
-                # TODO initial test on validation data
-
-                res = sess.run(
-                    fetches={
-                        "optim": self.optim,
-                        "summary": self.summary_op,
-                        "global_step": self.global_step,
-                    },
-                    feed_dict={
-                        self.x_in: x_b,
-                        self.y_in: y_b,
-                        self.t: i
-                    },
-                )
+            for x_seq, y_seq in zip(x_tr, y_tr):
+                # TODO get shared features from cpm
+                self._init_recurrent()
+                # x_f and y_f are frames for one image sequence
+                for i, (x_f, y_f) in enumerate(zip(x_seq, y_seq)):
+                    res = sess.run(
+                        fetches={
+                            "optim": self.optim,
+                            "summary": self.summary_op,
+                            "global_step": self.global_step,
+                            "pred": self.pred,
+                            "2dout": self.output_2d_assign,
+                            "3dout": self.out_pred_assign,
+                            "state": self.state_assign
+                        },
+                        feed_dict={
+                            self.features_in: features,
+                            self.y_in: y_f
+                        },
+                    )
                 # Write Training Summary
                 self.summary_tr.add_summary(
                     res["summary"], global_step=res["global_step"],
@@ -206,11 +193,12 @@ class RPSMNetwork(object):
 
                 # TODO test on validation set
                 # save best model
-            self.saver_cur.save(sess, './logs')
+            self.saver_cur.save(sess, './logs/model.ckpt')
+            self.summary_tr.add_graph(sess.graph)
 
     def test(self, x_te, y_te):
         """Test routine"""
-
+        #TODO config
         with tf.Session() as sess:
             # Load the best model
             latest_checkpoint = tf.train.latest_checkpoint(
@@ -242,7 +230,7 @@ def main(config):
     x_te = np.zeros((1, 16, 376, 376, 3))
     y_te = np.zeros((1, 16, 51))
 
-    mynet.test(x_te, y_te)
+    #mynet.test(x_te, y_te)
 
 
 if __name__ == "__main__":
