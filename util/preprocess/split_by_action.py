@@ -12,8 +12,8 @@ label_list = [None]*16*2  # 15 actions * train and test
 for i in range(len(label_list)):
   label_list[i] = []
 
-#for phase in ['train','val']:
-for phase in ['val']:
+for phase in ['train','val']:
+# for phase in ['val']:
   for cam_id in cameras:
     try:
       label_list_path = 'G:\\CSC-486-Stuff-and-Things\\img_list\\linux_accv_%s_%s_label_cropped_3d.txt' % (phase,cam_id);
@@ -26,7 +26,7 @@ for phase in ['val']:
       elem = item[0]
       elem = elem.split('\\')
       person_id = elem[5]
-      print(elem[6])
+      # print(elem[6])
       #print(elem[7].split('_')[0])
       action_id = int(elem[6].split('_')[0]) - 1
       
