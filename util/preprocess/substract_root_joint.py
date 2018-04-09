@@ -20,6 +20,8 @@ def gen_relative(ori_label_file,dst_folder):
     fn = elem[0]
     label = map(lambda x:float(x), elem[1].split(','))
     label = np.array(label)
+    print(label)
+    label = int(label)
     label = label.reshape([np.size(label)/3,3])
     root_loc = copy.deepcopy(label[0])
     for i in range(np.size(label,0)):
