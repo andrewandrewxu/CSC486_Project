@@ -8,8 +8,8 @@ def gen_relative(ori_label_file,dst_folder):
   if os.path.isdir(dst_folder) != True:
     os.mkdir(dst_folder)
   if os.path.exists(ori_label_file) != True:
-    print "Error!"
-    print "Input file not exists"
+    print("Error!")
+    print("Input file not exists")
     return 
   ori_label_file = open(ori_label_file,'r')
   dst_label_file = open(dst_folder + os.path.sep + 'filename_gt.txt','w')
@@ -39,8 +39,8 @@ def gen_relative(ori_label_file,dst_folder):
 
 if __name__ == "__main__":
   if len(sys.argv ) != 3:
-    print "Error!"
-    print "Usage: python gen_relative.py ori_d3_label_file dst_folder"
+    print("Error!")
+    print("Usage: python gen_relative.py ori_d3_label_file dst_folder")
   else:
 
     ori_label_file = sys.argv[1]
