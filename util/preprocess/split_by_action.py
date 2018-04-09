@@ -38,7 +38,7 @@ for phase in ['val']:
         print ("Error")
         print (person_id)
 
-dst_folder = 'G:\\CSC-486-Stuff-and-Things\\new_img_list'
+dst_folder = 'G:\\CSC-486-Stuff-and-Things\\new_img_list\\'
 if not os.path.isdir(dst_folder):
   os.mkdir(dst_folder)
 
