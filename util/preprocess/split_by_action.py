@@ -15,8 +15,12 @@ for i in range(len(label_list)):
 #for phase in ['train','val']:
 for phase in ['val']:
   for cam_id in cameras:
-    label_list_path = 'G:\\CSC-486-Stuff-and-Things\\img_list\\linux_accv_%s_%s_label_cropped_3d.txt' % (phase,cam_id);
-    label_list_file = open(label_list_path,'r')
+    try:
+      label_list_path = 'G:\\CSC-486-Stuff-and-Things\\img_list\\linux_accv_%s_%s_label_cropped_3d.txt' % (phase,cam_id);
+      label_list_file = open(label_list_path,'r')
+    except FileNotFoundError:
+      print('Could not find {}. skipping.'.format(label_list_path))
+      continue
     for lin in label_list_file.readlines():
       item = lin.split(' ')
       elem = item[0]
