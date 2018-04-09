@@ -54,4 +54,4 @@ for i in range(1,len(label_list)):
   dst_label_file.write(''.join(label_list[i]))
 
   print(dst_label_list_path)
-  sys.exit(0)
+  # sys.exit(0)
