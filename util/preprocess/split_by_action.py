@@ -43,10 +43,8 @@ if not os.path.isdir(dst_folder):
   os.mkdir(dst_folder)
 
 for i in range(1,len(label_list)):
-  print(dst_label_list_path)
-  sys.exit(0)
   if i < 16:
-    dst_label_list_path = dst_folder + 'train_' + str(i) + '.txt' 
+    dst_label_list_path = dst_folder + 'train_' + str(i) + '.txt'
   elif i == 16:
     continue
   else:
@@ -55,3 +53,5 @@ for i in range(1,len(label_list)):
   dst_label_file = open(dst_label_list_path,'w')
   dst_label_file.write(''.join(label_list[i]))
 
+  print(dst_label_list_path)
+  sys.exit(0)
