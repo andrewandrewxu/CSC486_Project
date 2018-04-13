@@ -1,4 +1,3 @@
-
 import os
 import sys
 import numpy as np
@@ -24,20 +23,20 @@ def cal_mean_limb(src, dst):
       limb_length[i][j] = np.linalg.norm(labels[i][j] - labels[i][parent_id])
 
   mean_limb_length = np.mean(limb_length,axis = 0)
-  print mean_limb_length
+  print(mean_limb_length)
   with open(dst,'w') as f:
     mean_limb_length = mean_limb_length.tolist()
     mean_limb_length = [str(x) for x in mean_limb_length]
     line = ','.join(mean_limb_length)
     f.write(line + '\n')
-    print line
+    print (line)
       
 
 
 if __name__ == "__main__":
   if len(sys.argv ) != 3:
-    print "Error!"
-    print "Usage: python cal_mean_limb.py src dst"
+    print ("Error!")
+    print ("Usage: python cal_mean_limb.py src dst")
     
   else:
 
