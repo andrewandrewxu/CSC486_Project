@@ -45,8 +45,8 @@ def mean_scale(src,dst, mean_limb_file):
 
 if __name__ == "__main__":
   if len(sys.argv ) != 4:
-    print "Error!"
-    print "Usage: python mean_limb_scale.py src dst mean_limb_file"
+    print("Error!")
+    print("Usage: python mean_limb_scale.py src dst mean_limb_file")
   else:
 
     ori_label_file = sys.argv[1]
