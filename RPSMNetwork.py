@@ -3,6 +3,8 @@ import tensorflow as tf
 import numpy as np
 from pretrained.Pose2dFeatureExtraction import Pose2d
 
+"Original base for the code from CSC486B/CSC586B by Kwang Moo Yi, released under the MIT license"
+
 class RPSMNetwork(object):
     """Network class """
 

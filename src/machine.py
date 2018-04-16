@@ -3,7 +3,7 @@ import os
 import tensorflow as tf
 
 from util.config import get_config, print_usage
-
+"Original base for the code from CSC486B/CSC586B by Kwang Moo Yi, released under the MIT license"
 
 class Machine(object):
     """Network class """
