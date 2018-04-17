@@ -24,15 +24,13 @@ def add_argument_group(name):
 train_arg = add_argument_group("Training")
 
 
-
-
 train_arg.add_argument("--data_dir", type=str,
                        default="/Users/ax/Documents/Uvic/CSC486B/A3/assignment3/cifar-10-batches-py",
                        help="Directory with CIFAR10 data")
 
-# train_arg.add_argument("--learning_rate", type=float,
-#                        default=1e-4,
-#                        help="Learning rate (gradient step size)")
+train_arg.add_argument("--learning_rate", type=float,
+                       default=1e-4,
+                       help="Learning rate (gradient step size)")
 
 train_arg.add_argument("--batch_size", type=int,
                        default=100,
