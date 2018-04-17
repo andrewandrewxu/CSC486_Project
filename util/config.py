@@ -20,64 +20,79 @@ def add_argument_group(name):
 
 
 # ----------------------------------------
-# Arguments for training
-train_arg = add_argument_group("Training")
+# General Arguments
+general_arg = add_argument_group("General")
 
+general_arg.add_argument("--data_dir", type=str,
+                       default="./data",
+                       help="Directory with of Human3.6M HDF5 Data")
 
-train_arg.add_argument("--data_dir", type=str,
-                       default="/Users/ax/Documents/Uvic/CSC486B/A3/assignment3/cifar-10-batches-py",
-                       help="Directory with CIFAR10 data")
+general_arg.add_argument('--manual-seed', type=int, default=-1,
+                         help='Manually set seed')
 
-train_arg.add_argument("--learning_rate", type=float,
-                       default=1e-4,
-                       help="Learning rate (gradient step size)")
-
-train_arg.add_argument("--batch_size", type=int,
-                       default=100,
-                       help="Size of each training batch")
-
-# train_arg.add_argument("--num_epoch", type=int,
-#                        default=100,
-#                        help="Number of epochs to train")
-
-train_arg.add_argument("--log_dir", type=str,
-                       default="./logs",
-                       help="Directory to save logs and current model")
-
-train_arg.add_argument("--save_dir", type=str,
-                       default="./save",
-                       help="Directory to save the best model")
+general_arg.add_argument('--gpu', type=str2bool, default=False,
+                         help='Prefer GPU Usage')
 
 # ----------------------------------------
-# Arguments for model
+# Model Arguments
 model_arg = add_argument_group("Model")
 
-# model_arg.add_argument("--feature_type", type=str,
-#                        default="hog",
-#                        choices=["hog", "h_histogram", "rgb"],
-#                        help="Type of feature to be used")
+model_arg.add_argument('--model_path', type=str, default='',
+                       help='Provide a full path to a previously trained model')
+model_arg.add_argument('--continue', type=str2bool, default=False,
+                       help='Continue training from last point')
 
-# model_arg.add_argument("--reg_lambda", type=float,
-#                        default=1e-4,
-#                        help="Regularization strength")
+# ----------------------------------------
+# Hyperparameter Arguments
+hyperparameter_arg = add_argument_group('Hyperparameters')
+hyperparameter_arg.add_argument('--lr', type=float, default=1e-4, help='Learning Rate')
+hyperparameter_arg.add_argument('--lr-decay', type=float, default=0.0, help='Learning Rate Decay')
+hyperparameter_arg.add_argument('--momentum', type=float, default=0.0, help='Momentum')
+hyperparameter_arg.add_argument('--weight-decay', type=float, default=0.0, help='Weight Decay')
+hyperparameter_arg.add_argument('--optim', type=str, choices=('adam', 'rmsprop', 'sgd', 'nag', 'adadelta'),
+                                default='adam', help='Optimization Method')
+# ----------------------------------------
+# Training Arguments
+training_arg = add_argument_group('Training')
+training_arg.add_argument('--n_epochs', type=int, default=100, help='Total number of epochs to run')
+training_arg.add_argument('--nt_iters', type=int, help='Number of training iterations per epoch')
+training_arg.add_argument('--t_batch_size', type=int, default=3, help='Minibatch size')
+training_arg.add_argument('--nv_iters', type=int, help='Number of validation iterations per epoch')
+training_arg.add_argument('--v_batch_size', type=int, default=1, help='Validation minibatch size')
+training_arg.add_argument("--learning_rate", type=float, default=1e-4, help="Learning rate (gradient step size)")
+training_arg.add_argument("--log_dir", type=str, default="./logs", help="Directory to save logs and current model")
+training_arg.add_argument("--save_dir", type=str, default="./save", help="Directory to save the best model")
 
-# model_arg.add_argument("--num_unit", type=int,
-#                        default=64,
-#                        help="Number of neurons in the hidden layer")
+# ----------------------------------------
+# Data Arguments
+data_arg = add_argument_group('Data')
+data_arg.add_argument('--input_res', default=368, type=int, help='Input image resolution')
+data_arg.add_argument('--label_size', default=51, type=int, help='Output heatmap resolution')
+data_arg.add_argument('--train_h5_path', type=str, help='Name of training data file')
+data_arg.add_argument('--valid_h5_path', type=str, help='Name of validation data file')
+data_arg.add_argument('--min_scale', type=float, default=0.9)
+data_arg.add_argument('--max_scale', type=float, default=1.1)
+data_arg.add_argument('--no_subtract_mean', default=False, type=str2bool, help='Whether to subtract 0.5 to [-0.5, 0.5]')
 
-# model_arg.add_argument("--num_hidden", type=int,
-#                        default=3,
-#                        help="Number of hidden layers")
+# ----------------------------------------
+# RPSM Arguments
+rpsm_arg = add_argument_group('RPSM')
+rpsm_arg.add_argument('--rho', default=3, type=int, help='Number of cpm joints')
+rpsm_arg.add_argument('--hidden_size', default=2048, type=int, help='Number of joints')
+rpsm_arg.add_argument('--feat_ind', default=33, type=int, help='Index of the shared 2d pose model')
+rpsm_arg.add_argument('--num_ch', default=128, type=int, help='Image feature channel number')
+rpsm_arg.add_argument('--np', default=17, type=int, help='Number of joints')
+rpsm_arg.add_argument('--img_feat_dim', default=2048, type=int,
+                      help='The coarse feature extract image feature dimension')
+rpsm_arg.add_argument('--shared_model', type=str, help='Shared model in 2D pose module')
 
-# model_arg.add_argument("--num_class", type=int,
-#                        default=10,
-#                        help="Number of classes in the dataset")
-
-# model_arg.add_argument("--active_type", type=str,
-#                        default="relu",
-#                        choices=["relu", "tanh"],
-#                        help="Activation type")
-
+# ----------------------------------------
+# Temporal Pose Estimation Arguments
+tpe_arg = add_argument_group('Temporal Pose Estimation')
+tpe_arg.add_argument('--max_frames', default=20, type=int, help='Max frames to  capture information')
+tpe_arg.add_argument('--root_image_folder', type=str)
+tpe_arg.add_argument('--train_image_list', type=str)
+tpe_arg.add_argument('--valid_image_list', type=str)
 
 def get_config():
     config, unparsed = parser.parse_known_args()

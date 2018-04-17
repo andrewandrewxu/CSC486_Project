@@ -1,9 +1,9 @@
 import os
 import tensorflow as tf
-import numpy as np
 from pretrained.Pose2dFeatureExtraction import Pose2d
-
+import numpy as np
 "Original base for the code from CSC486B/CSC586B by Kwang Moo Yi, released under the MIT license"
+
 
 class RPSMNetwork(object):
     """Network class """
@@ -177,6 +177,7 @@ class RPSMNetwork(object):
             Validation labels.
 
         """
+
         pose2d = Pose2d({'data':  self.x_in})
 
         # Run TensorFlow Session
@@ -226,7 +227,6 @@ class RPSMNetwork(object):
 
     def test(self, x_te, y_te):
         """Test routine"""
-        #TODO config
         with tf.Session() as sess:
             # Load the best model
             latest_checkpoint = tf.train.latest_checkpoint(
