@@ -89,7 +89,7 @@ tpe_arg = add_argument_group('Temporal Pose Estimation')
 tpe_arg.add_argument('--max_frames', default=20, type=int, help='Max frames to  capture information')
 tpe_arg.add_argument('--root_image_folder', type=str)
 tpe_arg.add_argument('--train_image_list', type=str)
-tpe_arg.add_argument('--valid_image-list', type=str)
+tpe_arg.add_argument('--valid_image_list', type=str)
 
 def get_config():
     config, unparsed = parser.parse_known_args()
