@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import random
+import cv2
 
 import h5py
 
@@ -29,3 +31,37 @@ class H5Dataset(object):
         self.h5_data = h5py.File(self.h5_path)
         self.n_samples = opts.nv_iters if opts.nv_iters else len(list(self.h5_data.keys()))
         self.transforms = None # TODO: Create image transforms util file
+
+    def get(self, index=None):
+        """
+        If :index: is None, choose a random index.
+        Returns a tuple of (images, labels) from the index
+        """
+        if not index:
+            index = random.randint(1, self.n_samples)
+
+        start = index
+        end = index + self.max_frames -1
+
+        if end > self.max_frames -1:
+            end = self.n_samples
+
+        for i in range(start, end):
+            indice = self.h5_data['indice'][str(index)][:][0]
+
+            if indice < 0.5:
+                end = i - 1
+                break
+
+        sequence_length = end - start + 1
+
+        images = []
+        labels = []
+
+        for i in range(sequence_length):
+            img_id = self.h5_data['image'][str(start+i-1)][:][0]
+            img = cv2.imread(self.img_list[img_id])
+            images.append(img)
+            label = self.h5_data['label'][str(index+i-1)][:]
+            labels.append(label)
+        return images, labels
