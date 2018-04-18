@@ -36,6 +36,7 @@ else
     return
 end
 
+%use linux paths here
 img_folder = strcat(data_path,'/linux_imgs/',phase,'/');
 cropped_img_folder = strcat(data_path,'/linux_cropped_imgs/',phase, '/');
 
@@ -55,12 +56,14 @@ end
 
 step = 5;
 
+%for each camera
 for camera_ind = [3,2,1,4]
     d2_outfile = fopen( strcat(img_list_folder,filesep,'linux_accv_',phase,'_camera_',num2str(camera_ind),'_label_2d.txt'),'w');
     d3_outfile = fopen( strcat(img_list_folder,filesep,'linux_accv_',phase,'_camera_',num2str(camera_ind),'_label_3d.txt'),'w');
     crop_d2_outfile = fopen(strcat(img_list_folder,filesep,'linux_accv_',phase,'_camera_',num2str(camera_ind),'_label_cropped_2d.txt'),'w');
     crop_d3_outfile = fopen( strcat(img_list_folder,filesep,'linux_accv_',phase,'_camera_',num2str(camera_ind),'_label_cropped_3d.txt'),'w');
     bbox_outfile = fopen( strcat(img_list_folder,filesep,'linux_accv_',phase,'_camera_',num2str(camera_ind),'bbox.txt'),'w');
+    %process subjects
     for subject = subjects
         
         %         if camera_ind == 1 && subject ~= 11
@@ -103,7 +106,8 @@ for camera_ind = [3,2,1,4]
                 FeatureName = 'ground_truth_bs';
                 mask_feature_path = ['MySegmentsMat' filesep FeatureName filesep];
                 load([Sequence.getPath() filesep mask_feature_path Sequence.getName '.mat'],'Masks');
-                
+
+                %process frames
                 for frame = 1:step:db.getNumFrames(subject, action, subaction)
                     im = da.getFrame(frame);
                     img_fn = strcat(newSubFolder,filesep,num2str(frame),'.jpg');
@@ -152,7 +156,7 @@ for camera_ind = [3,2,1,4]
     fclose(d3_outfile);
     
 end
-    function boundingbox = getBoundingBox(A)
+    function boundingbox = getBoundingBox(A) %process the bounding boxes 
         % arg: A, a logical matrix
         % return: a bounding box of the nonzeros in the matrix
         % [x_min y_min width height]
@@ -160,9 +164,7 @@ end
         [y,x] = ind2sub(size(A), find(A)); % matlab raw-base
         coord = [x, y];
         boundingbox = [min(coord) max(coord) - min(coord)];
-        
     end
-
 end
 
 
