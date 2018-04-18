@@ -1,8 +1,9 @@
-import os
+import matplotlib.pyplot as plt
 import tensorflow as tf
 from pretrained.Pose2dFeatureExtraction import Pose2d
 import numpy as np
 import tqdm
+import os
 
 "Original base for the code from CSC486B/CSC586B by Kwang Moo Yi, released under the MIT license"
 
@@ -15,7 +16,6 @@ class RPSMNetwork(object):
         self.config = config
         self.num_states = 1024
         self.image_size = 368
-        self.num_frames = 16
         self.num_output = 51
         self.train_dataset = train_dataset
         self.val_dataset = val_dataset
@@ -163,6 +163,16 @@ class RPSMNetwork(object):
                 write_meta_graph=False,
             )
 
+    def show_result_2d(self, img, pred, truth):
+        plt.imshow(img)  # why is it only showing the blue channel??
+        pred = np.reshape(pred, (17, 3))
+        exp = np.reshape(truth, (17, 3))
+        pred *= self.image_size
+        exp *= self.image_size
+        plt.scatter(x=pred[:, 0], y=pred[:, 1], c='r')
+        plt.scatter(x=truth[:, 0], y=truth[:, 1], c='b')
+        plt.show()
+
     def train(self, opts):
         """Training function.
 
@@ -200,10 +210,12 @@ class RPSMNetwork(object):
                 x_tr, y_tr = self.train_dataset.get(index=iter)
 
                 features = sess.run(pose2d.get_output(), feed_dict={self.x_in: x_tr})
+                i=0
                 for feature, label in zip(features, y_tr):
                     res = sess.run(
                         fetches={
                             "optim": self.optim,
+                            "pred": self.pred,
                             "loss": self.loss,
                             "summary": self.summary_op,
                             "global_step": self.global_step,
@@ -216,6 +228,11 @@ class RPSMNetwork(object):
                             self.y_in: label
                         },
                     )
+                    if i == len(x_tr) - 1:
+                        pass
+                        # self.show_result_2d(x_tr[i], res["pred"], label)
+                    i+=1
+
                 # Write Training Summary
                 self.summary_tr.add_summary(
                     res["summary"], global_step=res["global_step"],
