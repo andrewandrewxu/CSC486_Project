@@ -1,6 +1,6 @@
 from kaffe.tensorflow import Network
 
-
+#Extracts features from file metadata and feeds into Conv-Neural-Net
 class Pose2d(Network):
     def setup(self):
         (self.feed('data')

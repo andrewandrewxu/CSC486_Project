@@ -10,3 +10,8 @@
 - Add the uvic repo: `git remote add git@gitlab.csc.uvic.ca:courses/201801/csc486b/final-project/group-c/term-project.git`
 - Set the uvic repo as an origin branch: `git remote set-url --add --push origin git@gitlab.csc.uvic.ca:courses/201801/csc486b/final-project/group-c/term-project.git`
 - Set the github repo as an origin branch (to mirror the codebase): `git remote set-url --add --push origin git@github.com:andrewandrewxu/CSC486_Project.git`
+
+Authors: Christopher Brett, Tyson Battistella, Shae Brown, Andrew Xu
+Academic Institution: Univeristy of Victoria 
+Year: 2018
+Course: Computer Science 486 Spring 2018

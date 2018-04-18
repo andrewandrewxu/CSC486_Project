@@ -2,7 +2,7 @@ from util.config import print_usage, get_config
 from src.RPSMNetwork import RPSMNetwork
 from src.h5_dataset import H5Dataset
 
-
+#Machine Learning Project Using Tensorflow for Convolutional Neural Networks
 def main(config):
     """The main function."""
     mynet = RPSMNetwork(config)
