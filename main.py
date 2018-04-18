@@ -5,13 +5,11 @@ from src.h5_dataset import H5Dataset
 #Machine Learning Project Using Tensorflow for Convolutional Neural Networks
 def main(config):
     """The main function."""
-    mynet = RPSMNetwork(config)
     h5_train = H5Dataset(config, 'train')
     h5_val = H5Dataset(config, 'valid')
-    x_tr, y_tr = h5_train.get()
-    x_va, y_va = h5_val.get()
+    mynet = RPSMNetwork(h5_train, h5_val, config)
 
-    mynet.train(x_tr, y_tr, x_va, y_va)
+    mynet.train(config)
 
 
 if __name__ == "__main__":

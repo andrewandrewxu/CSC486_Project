@@ -55,15 +55,15 @@ class H5Dataset(object):
         if end > self.n_samples:
             end = self.n_samples
 
-        for i in range(start, end):
-            try:
-                indice = self.h5_data['indice'][str(index)][:][0]
-            except KeyError:
-                print('Warning: Could not open indice ', index, '.\nSkipping.')
-                continue
-            if indice < 0.5:
-                end = i - 1
-                break
+        # for i in range(start, end):
+        #     try:
+        #         indice = self.h5_data['indice'][str(index)][:][0]
+        #     except KeyError:
+        #         print('Warning: Could not open indice ', index, '.\nSkipping.')
+        #         continue
+        #     if indice < 0.5:
+        #         end = i - 1
+        #         break
 
         sequence_length = end - start + 1
 

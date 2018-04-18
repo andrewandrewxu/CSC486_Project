@@ -10,13 +10,15 @@ import tqdm
 class RPSMNetwork(object):
     """Network class """
 
-    def __init__(self, config):
+    def __init__(self, train_dataset, val_dataset, config):
 
         self.config = config
         self.num_states = 1024
         self.image_size = 368
         self.num_frames = 16
         self.num_output = 51
+        self.train_dataset = train_dataset
+        self.val_dataset = val_dataset
 
         self._build_placeholder()
         self._init_recurrent()
@@ -161,7 +163,7 @@ class RPSMNetwork(object):
                 write_meta_graph=False,
             )
 
-    def train(self, x_tr, y_tr, x_va, y_va):
+    def train(self, opts):
         """Training function.
 
         Parameters
@@ -192,23 +194,27 @@ class RPSMNetwork(object):
             self.resume_if_checkpoint(sess)
 
             print("Training...")
-            for x_seq, y_seq in tqdm.tqdm(zip(x_tr, y_tr)):
+            for iter in tqdm.trange(opts.nt_iters):
                 self._init_recurrent()
-                features = sess.run(pose2d.get_output(), feed_dict={self.x_in: [x_seq]})
-                res = sess.run(
-                    fetches={
-                        "optim": self.optim,
-                        "loss": self.loss,
-                        "summary": self.summary_op,
-                        "global_step": self.global_step,
-                        "2dout": self.output_2d_assign,  # assign 2d pose features used in next step
-                        "3dout": self.out_pred_assign,  # assign 3d pose used in next step
-                        "state": self.state_assign # assign state used for next step
-                    },
-                    feed_dict={
-                        self.features_in: features[0],
-                        self.y_in: y_tr[0]
-                    },
+
+                x_tr, y_tr = self.train_dataset.get(index=iter)
+
+                features = sess.run(pose2d.get_output(), feed_dict={self.x_in: x_tr})
+                for feature, label in zip(features, y_tr):
+                    res = sess.run(
+                        fetches={
+                            "optim": self.optim,
+                            "loss": self.loss,
+                            "summary": self.summary_op,
+                            "global_step": self.global_step,
+                            "2dout": self.output_2d_assign,  # assign 2d pose features used in next step
+                            "3dout": self.out_pred_assign,  # assign 3d pose used in next step
+                            "state": self.state_assign  # assign state used for next step
+                        },
+                        feed_dict={
+                            self.features_in: feature,
+                            self.y_in: label
+                        },
                     )
                 # Write Training Summary
                 self.summary_tr.add_summary(
@@ -216,10 +222,10 @@ class RPSMNetwork(object):
                 )
 
                 self.saver_cur.save(
-                        sess, self.save_file_cur,
-                        global_step=self.global_step,
-                        write_meta_graph=False,
-                    )
+                    sess, self.save_file_cur,
+                    global_step=self.global_step,
+                    write_meta_graph=False,
+                )
                 self.validate(res, sess)
 
             self.saver_cur.save(sess, self.save_file_cur)
