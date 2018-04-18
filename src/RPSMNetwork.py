@@ -2,7 +2,7 @@ import os
 import tensorflow as tf
 from pretrained.Pose2dFeatureExtraction import Pose2d
 import numpy as np
-from tqdm import trange
+import tqdm
 
 "Original base for the code from CSC486B/CSC586B by Kwang Moo Yi, released under the MIT license"
 
@@ -192,7 +192,7 @@ class RPSMNetwork(object):
             self.resume_if_checkpoint(sess)
 
             print("Training...")
-            for x_seq, y_seq in tqdm(zip(x_tr, y_tr)):
+            for x_seq, y_seq in tqdm.tqdm(zip(x_tr, y_tr)):
                 self._init_recurrent()
                 features = sess.run(pose2d.get_output(), feed_dict={self.x_in: x_seq})
                 # x_f and y_f are frames for one image sequence
