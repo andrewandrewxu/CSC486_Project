@@ -273,6 +273,8 @@ class RPSMNetwork(object):
             #not sure if we need to save_cur again here, I just leave it
             self.saver_cur.save(sess, self.save_file_cur)
             self.summary_tr.add_graph(sess.graph)
+            self.summary_va.add_graph(sess.graph)
+
 
     def test(self, x_te, y_te):
         """Test routine"""
