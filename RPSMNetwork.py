@@ -213,7 +213,18 @@ class RPSMNetwork(object):
                     latest_checkpoint
                 )
 
-                # TODO test
+        #Evaluate the accuracy of the tested trained data compared to model and prints results
+            res = sess.run(
+               fetches={
+                    "acc": self.acc,
+               },
+               feed_dict={
+                    self.x_in: x_te,
+                    self.y_in: y_te,
+               },
+            )
+            print("Test accuracy is {}".format(res["acc"]))
+
 
 
 def main(config):
