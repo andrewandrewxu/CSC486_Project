@@ -147,7 +147,7 @@ class RPSMNetwork(object):
 
     def validate(self, res, sess):
         if res["loss"] > self.best_loss:
-            self.best_loss = res["acc"]
+            self.best_loss = res["loss"]
             sess.run(
                 self.loss_assign_op,
                 feed_dict={
@@ -192,23 +192,21 @@ class RPSMNetwork(object):
             print("Training...")
             for x_seq, y_seq in zip(x_tr, y_tr):
                 self._init_recurrent()
-                features = sess.run(pose2d.get_output(), feed_dict={self.x_in: x_seq})
-                # x_f and y_f are frames for one image sequence
-                for i, (x_f, y_f) in enumerate(zip(x_seq, y_seq)):
-                    res = sess.run(
-                        fetches={
-                            "optim": self.optim,
-                            "loss": self.loss,
-                            "summary": self.summary_op,
-                            "global_step": self.global_step,
-                            "2dout": self.output_2d_assign,  # assign 2d pose features used in next step
-                            "3dout": self.out_pred_assign,  # assign 3d pose used in next step
-                            "state": self.state_assign # assign state used for next step
-                        },
-                        feed_dict={
-                            self.features_in: features[i],
-                            self.y_in: y_f
-                        },
+                features = sess.run(pose2d.get_output(), feed_dict={self.x_in: [x_seq]})
+                res = sess.run(
+                    fetches={
+                        "optim": self.optim,
+                        "loss": self.loss,
+                        "summary": self.summary_op,
+                        "global_step": self.global_step,
+                        "2dout": self.output_2d_assign,  # assign 2d pose features used in next step
+                        "3dout": self.out_pred_assign,  # assign 3d pose used in next step
+                        "state": self.state_assign # assign state used for next step
+                    },
+                    feed_dict={
+                        self.features_in: features[0],
+                        self.y_in: y_tr[0]
+                    },
                     )
                 # Write Training Summary
                 self.summary_tr.add_summary(
@@ -241,11 +239,11 @@ class RPSMNetwork(object):
         #Evaluate the accuracy of the tested trained data compared to model and prints results
             res = sess.run(
                fetches={
-                    "acc": self.acc,
+                    "loss": self.loss
                },
                feed_dict={
                     self.x_in: x_te,
                     self.y_in: y_te,
                },
             )
-            print("Test accuracy is {}".format(res["acc"]))
+            print("Test accuracy is {}".format(res["loss"]))
