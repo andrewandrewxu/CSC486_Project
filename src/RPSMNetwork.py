@@ -185,7 +185,7 @@ class RPSMNetwork(object):
             # Init
             print("Initializing...")
             sess.run(tf.global_variables_initializer())
-            pose2d.load('pretrained/Pose2dFeatureExtraction.npy', sess)
+            pose2d.load('pretrained{}Pose2dFeatureExtraction.npy'.format(os.sep), sess)
 
             self.resume_if_checkpoint(sess)
 
