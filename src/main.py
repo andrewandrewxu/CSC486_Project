@@ -1,7 +1,7 @@
 from src.machine import Machine
 from util.config import print_usage, get_config
 
-
+#Machine Learning Project Using Tensorflow for Convolutional Neural Networks
 def main(config):
     """The main function."""
     mynet = Machine(config)
