@@ -56,7 +56,11 @@ class H5Dataset(object):
             end = self.n_samples
 
         for i in range(start, end):
-            indice = self.h5_data['indice'][str(index)][:][0]
+            try:
+                indice = self.h5_data['indice'][str(index)][:][0]
+            except KeyError:
+                print('Warning: Could not open indice ', index, '.\nSkipping.')
+                continue
             if indice < 0.5:
                 end = i - 1
                 break
@@ -67,10 +71,20 @@ class H5Dataset(object):
         labels = []
 
         for i in range(sequence_length):
-            img_id = self.h5_data['image'][str(start+i)][:][0]
-            img = cv2.imread(self.image_id_to_path_map[img_id+1])
+            try:
+                img_id = self.h5_data['image'][str(start+i)][:][0]
+                img = cv2.imread(self.image_id_to_path_map[img_id+1])
+            except KeyError:
+                print('Warning: Could not open image id ', start+i, '.\nSkipping.')
+                continue
             sized = cv2.resize(img, (368, 368))
+
+            try:
+                label = self.h5_data['label'][str(index+i)][:]
+            except KeyError:
+                print('Warning: Could not open label ', index+i, '.\nSkipping.')
+                continue
+
             images.append(sized)
-            label = self.h5_data['label'][str(index+i)][:]
             labels.append(label)
         return np.array(images), np.array(labels)

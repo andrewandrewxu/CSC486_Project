@@ -171,3 +171,6 @@ venv.bak/
 
 *.jpg
 *.h5
+
+logs
+save
