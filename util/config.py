@@ -59,6 +59,9 @@ training_arg.add_argument('--nt_iters', type=int, help='Number of training itera
 training_arg.add_argument('--t_batch_size', type=int, default=3, help='Minibatch size')
 training_arg.add_argument('--nv_iters', type=int, help='Number of validation iterations per epoch')
 training_arg.add_argument('--v_batch_size', type=int, default=1, help='Validation minibatch size')
+training_arg.add_argument("--learning_rate", type=float, default=1e-4, help="Learning rate (gradient step size)")
+training_arg.add_argument("--log_dir", type=str, default="./logs", help="Directory to save logs and current model")
+training_arg.add_argument("--save_dir", type=str, default="./save", help="Directory to save the best model")
 
 # ----------------------------------------
 # Data Arguments

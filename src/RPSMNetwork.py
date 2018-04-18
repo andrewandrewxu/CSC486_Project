@@ -1,7 +1,9 @@
 import os
 import tensorflow as tf
-import numpy as np
 from pretrained.Pose2dFeatureExtraction import Pose2d
+import numpy as np
+"Original base for the code from CSC486B/CSC586B by Kwang Moo Yi, released under the MIT license"
+
 
 class RPSMNetwork(object):
     """Network class """
@@ -27,7 +29,7 @@ class RPSMNetwork(object):
     def _init_recurrent(self):
         with tf.variable_scope("Recurrent", reuse=tf.AUTO_REUSE):
             self.lstm = tf.contrib.rnn.BasicLSTMCell(1024)
-            hidden_state = tf.get_variable('hidden_state', dtype=tf.float32, shape=(1,1024),
+            hidden_state = tf.get_variable('hidden_state', dtype=tf.float32, shape=(1, 1024),
                                            initializer=tf.initializers.zeros)
             current_state = tf.get_variable('current_state', dtype=tf.float32, shape=(1, 1024),
                                             initializer=tf.initializers.zeros)
@@ -86,6 +88,13 @@ class RPSMNetwork(object):
             # Record summary for loss
             tf.summary.scalar("loss", self.loss)
 
+            self.best_va_loss_in = tf.placeholder(tf.float32, shape=())
+            self.best_va_loss = tf.get_variable(
+                "best_loss_acc", shape=(), trainable=False)
+            # Assign op to store this value to TF variable
+            self.loss_assign_op = tf.assign(
+                self.best_va_loss, self.best_va_loss_in)
+
     def _build_optim(self):
         """Build optimizer related ops and vars."""
 
@@ -96,8 +105,7 @@ class RPSMNetwork(object):
                 dtype=tf.int64,
                 trainable=False)
             optimizer = tf.train.AdamOptimizer(
-                learning_rate=1)
-            # TODO get learning rate from config
+                learning_rate=self.config.learning_rate)
             self.optim = optimizer.minimize(
                 self.loss, global_step=self.global_step)
 
@@ -109,22 +117,47 @@ class RPSMNetwork(object):
 
     def _build_writer(self):
         """Build the writers and savers"""
-        # TODO get config vars
 
-        # # Create summary writers (one for train, one for validation)
+        # Create summary writers (one for train, one for validation)
         self.summary_tr = tf.summary.FileWriter(
-            os.path.join('logs', "train"))
-        # self.summary_va = tf.summary.FileWriter(
-        #     os.path.join(self.config.log_dir, "valid"))
-        # # Create savers (one for current, one for best)
+            os.path.join(self.config.log_dir, "train"))
+        self.summary_va = tf.summary.FileWriter(
+            os.path.join(self.config.log_dir, "valid"))
         self.saver_cur = tf.train.Saver()
         self.saver_best = tf.train.Saver()
-        # # Save file for the current model
-        # self.save_file_cur = os.path.join(
-        #     self.config.log_dir, "model")
-        # # Save file for the best model
-        # self.save_file_best = os.path.join(
-        #     self.config.save_dir, "model")
+
+        self.save_file_cur = os.path.join(
+            self.config.log_dir, "model")
+        # Save file for the best model
+        self.save_file_best = os.path.join(
+            self.config.save_dir, "model")
+
+    def resume_if_checkpoint(self, sess):
+        b_resume = tf.train.latest_checkpoint(self.save_file_cur)
+        if b_resume:
+            print("Restoring from {}...".format(
+                self.config.log_dir))
+            self.saver_cur.restore(sess, self.save_file_cur)
+            self.step = sess.run(self.global_step)
+            self.best_loss = sess.run(self.best_va_loss)
+        else:
+            print("Starting from scratch...")
+            self.step = 0
+            self.best_loss = 0
+
+    def validate(self, res, sess):
+        if res["loss"] > self.best_loss:
+            self.best_loss = res["acc"]
+            sess.run(
+                self.loss_assign_op,
+                feed_dict={
+                    self.best_va_loss_in: self.best_loss
+                })
+            # Save the best model
+            self.saver_best.save(
+                sess, self.save_file_best,
+                write_meta_graph=False,
+            )
 
     def train(self, x_tr, y_tr, x_va, y_va):
         """Training function.
@@ -144,6 +177,7 @@ class RPSMNetwork(object):
             Validation labels.
 
         """
+
         pose2d = Pose2d({'data':  self.x_in})
 
         # Run TensorFlow Session
@@ -151,20 +185,9 @@ class RPSMNetwork(object):
             # Init
             print("Initializing...")
             sess.run(tf.global_variables_initializer())
-            pose2d.load('pretrained/Pose2dFeatureExtraction.npy', sess)
+            pose2d.load('pretrained{}Pose2dFeatureExtraction.npy'.format(os.sep), sess)
 
-
-            # b_resume = tf.train.latest_checkpoint(self.save_file_cur)
-            # if b_resume:
-            #     print("Restoring from {}...".format(
-            #         self.config.log_dir))
-            #     self.saver_cur.restore(sess, self.save_file_cur)
-            #     step = tf.get_variable("step", shape=1)
-            #     best_acc = tf.get_variable("best_va_acc", shape=1)
-            # else:
-            #     print("Starting from scratch...")
-            #     step = 0
-            #     best_acc = 0
+            self.resume_if_checkpoint(sess)
 
             print("Training...")
             for x_seq, y_seq in zip(x_tr, y_tr):
@@ -175,6 +198,7 @@ class RPSMNetwork(object):
                     res = sess.run(
                         fetches={
                             "optim": self.optim,
+                            "loss": self.loss,
                             "summary": self.summary_op,
                             "global_step": self.global_step,
                             "2dout": self.output_2d_assign,  # assign 2d pose features used in next step
@@ -191,14 +215,18 @@ class RPSMNetwork(object):
                     res["summary"], global_step=res["global_step"],
                 )
 
-                # TODO test on validation set
-                # save best model
-            self.saver_cur.save(sess, './logs/model.ckpt')
+                self.saver_cur.save(
+                        sess, self.save_file_cur,
+                        global_step=self.global_step,
+                        write_meta_graph=False,
+                    )
+                self.validate(res, sess)
+
+            self.saver_cur.save(sess, self.save_file_cur)
             self.summary_tr.add_graph(sess.graph)
 
     def test(self, x_te, y_te):
         """Test routine"""
-        #TODO config
         with tf.Session() as sess:
             # Load the best model
             latest_checkpoint = tf.train.latest_checkpoint(
@@ -212,36 +240,3 @@ class RPSMNetwork(object):
                 )
 
                 # TODO test
-
-
-def main(config):
-    """The main function."""
-
-    # TODO load data
-
-    mynet = RPSMNetwork(config)
-    x_tr = np.zeros((1, 16, 368, 368, 3))
-    y_tr = np.zeros((1, 16, 51))
-    x_va = np.zeros((1, 16, 368, 368, 3))
-    y_va = np.zeros((1, 16, 51))
-
-    mynet.train(x_tr, y_tr, x_va, y_va)
-
-    x_te = np.zeros((1, 16, 376, 376, 3))
-    y_te = np.zeros((1, 16, 51))
-
-    #mynet.test(x_te, y_te)
-
-
-if __name__ == "__main__":
-    #
-    # # TODO setup config file
-    # # ----------------------------------------
-    # # Parse configuration
-    # config, unparsed = get_config()
-    # # If we have unparsed arguments, print usage and exit
-    # if len(unparsed) > 0:
-    #     print_usage()
-    #     exit(1)
-
-    main(None)
