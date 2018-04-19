@@ -1,6 +1,13 @@
 ## Recurrent Pose Module
 
 Todo include license for the files we used
+
+[1] M. Lin, L. Lin, X. Liang, K. Wang and H. Chen, Recurrent 3D Pose Sequence Machines. CVPR, 2017. Available: https://github.com/MudeLin/RPSM. 
+
+[2] C. Ionescu, D. Papava, V. Olaru and C. Sminchisescu, "Human3.6M: Large Scale Datasets and Predictive Methods for 3D Human Sensing in Natural Environments", IEEE Transactions on Pattern Analysis and Machine Intelligence, 2014. Available: http://vision.imar.ro/human3.6m/eula.php. 
+
+[3] C. Ionescu, F. Li and C. Sminchisescu, Latent Structured Models for Human Pose Estimation. 2011. 
+
 ## Convolutional Pose Machines
 #### The CPM pretrained model was used in our 2d pose module
 
