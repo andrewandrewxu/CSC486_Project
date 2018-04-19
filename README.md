@@ -15,3 +15,26 @@ Authors: Christopher Brett, Tyson Battistella, Shae Brown, Andrew Xu
 Academic Institution: Univeristy of Victoria 
 Year: 2018
 Course: Computer Science 486 Spring 2018
+
+## Training the model
+
+Before you can run the model, the [Human 3.6M Dataset](http://vision.imar.ro/human3.6m/description.php) must be downloaded and processed following these [instructions](https://github.com/MudeLin/RPSM/tree/master/util/preprocess)
+
+To bypass these steps, we provide the following pre-processed data and meta data:
+[Images and image list](https://drive.google.com/drive/folders/1LkQCl6rSXiOE7JOo9DVhrhGvDOBdCQrZ)
+[HDF5 files](https://drive.google.com/drive/folders/1oD_0DjI04ECwJSEUTQP0lBuGf-rxILgf)
+
+The model can be trainined by running main.py with the following arguments:
+
+```
+--data_dir {hdf5 folder}
+--nt_iters {number of iterations}
+--train_h5_path {training hdf5 file}
+--valid_h5_path {validation hdf5 file}
+--root_image_folder {folder for the images}
+--train_image_list {image list for training}
+--valid_image_list {image list for validation}
+--max_frames {number of frames}
+```
+
+Run main.py -h for more information about the arguments.
