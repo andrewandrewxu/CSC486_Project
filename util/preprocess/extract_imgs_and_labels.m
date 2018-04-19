@@ -1,15 +1,18 @@
-function obj = extract_imgs_and_labels(camera_ind, subject, action, subaction)
+function obj = extract_imgs_and_labels(phase_id, camera_ind, subject, action, subaction)
 
 
 % Setup
 addpaths;
 close all;
 
-if nargin < 1
-    phase = 'val';
-else
+if phase_id == 1
     phase = 'train';
+else
+    phase = 'val';
 end
+
+phase = 'val';
+
 % Features{1} = H36MPose3DAnglesFeature();
 Features{1} = H36MPose3DPositionsFeature('Monocular',true);
 Features{2} = H36MPose2DPositionsFeature();
@@ -55,11 +58,11 @@ end
 
 step = 5;
 
-d2_outfile = fopen( strcat(img_list_folder,filesep,'linux_accv_',phase,'_camera_',num2str(camera_ind),'_label_2d.txt'),'w');
-d3_outfile = fopen( strcat(img_list_folder,filesep,'linux_accv_',phase,'_camera_',num2str(camera_ind),'_label_3d.txt'),'w');
-crop_d2_outfile = fopen(strcat(img_list_folder,filesep,'linux_accv_',phase,'_camera_',num2str(camera_ind),'_label_cropped_2d.txt'),'w');
-crop_d3_outfile = fopen( strcat(img_list_folder,filesep,'linux_accv_',phase,'_camera_',num2str(camera_ind),'_label_cropped_3d.txt'),'w');
-bbox_outfile = fopen( strcat(img_list_folder,filesep,'linux_accv_',phase,'_camera_',num2str(camera_ind),'bbox.txt'),'w');
+d2_outfile = fopen( strcat(img_list_folder,filesep,'linux_accv_',phase,'_camera_',num2str(camera_ind),'_label_2d.txt'),'a');
+d3_outfile = fopen( strcat(img_list_folder,filesep,'linux_accv_',phase,'_camera_',num2str(camera_ind),'_label_3d.txt'),'a');
+crop_d2_outfile = fopen(strcat(img_list_folder,filesep,'linux_accv_',phase,'_camera_',num2str(camera_ind),'_label_cropped_2d.txt'),'a');
+crop_d3_outfile = fopen( strcat(img_list_folder,filesep,'linux_accv_',phase,'_camera_',num2str(camera_ind),'_label_cropped_3d.txt'),'a');
+bbox_outfile = fopen( strcat(img_list_folder,filesep,'linux_accv_',phase,'_camera_',num2str(camera_ind),'bbox.txt'),'a');
 
 %      if camera_ind == 1 && subject ~= 11
 %         continue
@@ -118,12 +121,13 @@ for frame = 1:step:total_frames-1
     end
     disp(strcat(num2str(camera_ind), ',', num2str(subject),',',num2str(action), ',', num2str(subaction), ',', num2str(frame), '/', num2str(total_frames)))
 
-    im = da.getFrame(frame);
+%     im = da.getFrame(frame);
     img_fn = strcat(newSubFolder,filesep,num2str(frame),'.jpg');
     img_fn = regexprep(img_fn, '\\','\\\\');
-    imwrite(im,img_fn);
+%     imwrite(im,img_fn);
     crop_img_fn = strcat(new_cropped_img_folder,filesep,num2str(frame),'.jpg');
     crop_img_fn = regexprep(crop_img_fn, '\\','\\\\');
+
     d2_features = F{2}(int32(frame/step)+1,:);
 
     M = Masks{frame};
@@ -131,8 +135,8 @@ for frame = 1:step:total_frames-1
     bbox = getBoundingBox(M);
 
 
-    crop_img = imcrop(im,bbox);
-    imwrite(crop_img,crop_img_fn);
+%     crop_img = imcrop(im,bbox);
+%     imwrite(crop_img,crop_img_fn);
 
     new_d2_feature = d2_features;
     new_d2_feature(1:2:length(d2_features)) = d2_features(1:2:length(d2_features)) - bbox(1);
