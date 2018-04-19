@@ -75,3 +75,38 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+## Human3.6M Dataset
+### We downloaded and used this dataset for our model
+1. GRANT OF LICENSE FREE OF CHARGE FOR ACADEMIC USE ONLY 
+The authors, Catalin Ionescu, Dragos Papava, Vlad Olaru and Cristian Sminchisescu, are the owners of all intellectual property rights, including copyright, of this dataset and its associated software. Licenses free of charge are limited to academic use only. Provided you send the request from an academic address, you are granted a limited, non-exclusive, non-assignable and non-transferable license to use this dataset subject to the terms below. This license is not a sale of any or all of the owner's rights. This product may only be used by you, and you may not rent, lease, lend, sub-license or transfer the dataset or any of your rights under this agreement to anyone else.
+
+2. NO WARRANTIES
+The authors do not warrant the quality, accuracy, or completeness of any information, data or software provided. Such data and software is provided "AS IS" without warranty or condition of any nature. The authors disclaim all other warranties, expressed or implied, including but not limited to implied warranties of merchantability and fitness for a particular purpose, with respect to the data and any accompanying materials.
+
+3. RESTRICTION AND LIMITATION OF LIABILITY
+In no event shall the authors be liable for any other damages whatsoever arising out of the use of, or inability to use this dataset and its associated software, even if the authors have been advised of the possibility of such damages.
+
+4. RESPONSIBLE USE
+It is YOUR RESPONSIBILITY to ensure that your use of this product complies with these terms and to seek prior written permission from the authors and pay any additional fees or royalties, as may be required, for any uses not permitted or not specified in this agreement.
+
+5. ACCEPTANCE OF THIS AGREEMENT
+Any use whatsoever of this dataset and its associated software shall constitute your acceptance of the terms of this agreement. By using the dataset and its associated software, you agree to cite the papers of the authors, in any of your publications by you and your collaborators that make any use of the dataset, in the following format (NOTICE THAT CITING THE DATASET URL INSTEAD OF THE PUBLICATIONS, WOULD NOT BE COMPLIANT WITH THIS LICENSE AGREEMENT):
+
+@article{h36m_pami,
+author = {Ionescu, Catalin and Papava, Dragos and Olaru, Vlad and Sminchisescu, Cristian},
+title = {Human3.6M: Large Scale Datasets and Predictive Methods for 3D Human Sensing in Natural Environments},
+journal = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
+publisher = {IEEE Computer Society},
+year = {2014}
+}
+
+@inproceedings{IonescuSminchisescu11,
+author = {Catalin Ionescu, Fuxin Li, Cristian Sminchisescu},
+title = {Latent Structured Models for Human Pose Estimation},
+booktitle = {International Conference on Computer Vision},
+year = {2011}
+}
+
+6. FURTHER INFORMATION AND COMMERCIAL LICENSING
+For further information, or for commercial licensing, please contact the authors at the following email address human3.6m@imar.ro
