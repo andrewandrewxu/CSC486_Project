@@ -1,6 +1,6 @@
 ## Recurrent Pose Module
 
-Todo include license for the files we used
+Files/Resources Citation we used in the project
 
 [1] M. Lin, L. Lin, X. Liang, K. Wang and H. Chen, Recurrent 3D Pose Sequence Machines. CVPR, 2017. Available: https://github.com/MudeLin/RPSM. 
 
