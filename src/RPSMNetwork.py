@@ -151,12 +151,26 @@ class RPSMNetwork(object):
 
     def validate(self, res, sess):
         if res["loss"] > self.best_loss:
+            #Not sure if we have to do tf.assign here, I commented mine below
+            #tf.assign(self.best_loss, res["loss"])
             self.best_loss = res["loss"]
+            
             sess.run(
-                self.loss_assign_op,
+
+                fetches={
+                    "loss": self.loss_assign_op,
+                    "summary": self.summary_op,
+                    "global_step": self.global_step,
+                },
+                
                 feed_dict={
                     self.best_va_loss_in: self.best_loss
                 })
+
+            #Write Summary here
+            self.summary_va.add_summary(
+                res["summary"], global_step=res["global_step"],
+            )
             # Save the best model
             self.saver_best.save(
                 sess, self.save_file_best,
@@ -243,10 +257,24 @@ class RPSMNetwork(object):
                     global_step=self.global_step,
                     write_meta_graph=False,
                 )
-                self.validate(res, sess)
 
+                #Validation 
+
+                # hardcoded 500 iterations, not sure if need validate every 5000 iterations
+                b_validate = iter % 500 == 0
+                if b_validate:
+
+                    self.validate(res,sess)
+
+                    # self.summary_va.flush()
+
+                # self.validate(res, sess)
+
+            #not sure if we need to save_cur again here, I just leave it
             self.saver_cur.save(sess, self.save_file_cur)
             self.summary_tr.add_graph(sess.graph)
+            self.summary_va.add_graph(sess.graph)
+
 
     def test(self, x_te, y_te):
         """Test routine"""
